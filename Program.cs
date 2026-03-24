@@ -1,12 +1,16 @@
+using SessionAPI.Services;
+using SessionAPI.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer(); //swagger
-builder.Services.AddSwaggerGen(); // swagger
-builder.Services.AddControllers(); //added code 
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen(); 
+builder.Services.AddControllers(); 
 
 // Register configuration-based services
 builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
 
+builder.Services.AddScoped<ISessionService, SessionService>(); 
 var app = builder.Build();
 
 // 🔧 Initialize the database at startup
@@ -26,6 +30,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers(); //added code
+app.MapControllers(); 
 
 app.Run();

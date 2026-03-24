@@ -9,10 +9,10 @@ public class DbInitializer
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 type TEXT NOT NULL,
                 date TEXT NOT NULL, 
-                duration TEXT NOT NULL,
                 start TEXT NOT NULL,
                 end TEXT NOT NULL
             );";
         command.ExecuteNonQuery();
     }
 }
+
