@@ -8,7 +8,6 @@ public class Session
 
 public Session(string type, string date, string start, string end) 
     {
-       Id = Id;
        Type = type;
        Start = start;
        End = end;
