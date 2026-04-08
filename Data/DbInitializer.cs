@@ -15,4 +15,3 @@ public class DbInitializer
         command.ExecuteNonQuery();
     }
 }
-

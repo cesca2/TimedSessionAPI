@@ -2,13 +2,13 @@ using SessionAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen(); 
-builder.Services.AddControllers(); 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 // Register configuration-based services
 builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
-builder.Services.AddScoped<ISessionService, SessionService>(); 
+builder.Services.AddScoped<ISessionService, SessionService>();
 
 var app = builder.Build();
 
@@ -29,6 +29,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers(); 
+app.MapControllers();
 
 app.Run();

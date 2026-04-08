@@ -12,6 +12,6 @@ public class SqliteConnectionFactory : IDbConnectionFactory
 
     public SqliteConnection CreateConnection()
     {
-    return new SqliteConnection(_connectionString);
+        return new SqliteConnection(_connectionString);
     }
 }

@@ -3,84 +3,87 @@ using SessionAPI.Services;
 using SQLitePCL;
 
 namespace SessionAPI.Controllers
-{   
+{
     // specifies routing pattern for the controller [controller] is replaced with name of controller minus Controller suffix
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     [ApiController]
     public class SessionsController(ISessionService sessionService) : ControllerBase
     {
-    private readonly ISessionService _sessionService = sessionService;
+        private readonly ISessionService _sessionService = sessionService;
 
-    [HttpGet]
-    public ActionResult<List<Session>> GetAllSessions([FromQuery] PaginationParams paginationParams)
-    {
-        return Ok(_sessionService.GetAllRecords(paginationParams));
-    }
-
-    [HttpPost]
-    public ActionResult<Session> CreateSession(Session session) 
-    {
-        try {
-            return Ok(_sessionService.CreateSession(session));
+        [HttpGet]
+        public ActionResult<List<Session>> GetAllSessions([FromQuery] PaginationParams paginationParams)
+        {
+            return Ok(_sessionService.GetAllRecords(paginationParams));
         }
-        catch(ApplicationException ex)
+
+        [HttpPost]
+        public ActionResult<Session> CreateSession(Session session)
+        {
+            try
             {
-                return StatusCode(500, new {error=ex.Message});
+                return Ok(_sessionService.CreateSession(session));
             }
-        
-    }
-    
-    [HttpDelete("{id}")]
-    public ActionResult<Session> DeleteSession(int id)
-    {
-        try {
-            var result = _sessionService.DeleteSession(id);
-            if (result == null)
+            catch (ApplicationException ex)
             {
-                return NotFound($"Could not find record with ID {id}");
+                return StatusCode(500, new { error = ex.Message });
             }
 
-            return Ok(result);
         }
-        catch(ApplicationException ex)
-            {
-                return StatusCode(500, new {error=ex.Message});
 
-            }
-       
-    }
-    
-    [HttpPut("{id}")]
-    public ActionResult<Session> UpdateSession(int id, [FromBody] Session updatedSession)
-    {
-        try{
-            
-            if (id != updatedSession.Id)
+        [HttpDelete("{id}")]
+        public ActionResult<Session> DeleteSession(int id)
+        {
+            try
             {
-                return BadRequest(new
+                var result = _sessionService.DeleteSession(id);
+                if (result == null)
                 {
-                    errors = new[]
+                    return NotFound($"Could not find record with ID {id}");
+                }
+
+                return Ok(result);
+            }
+            catch (ApplicationException ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+
+            }
+
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<Session> UpdateSession(int id, [FromBody] Session updatedSession)
+        {
+            try
+            {
+
+                if (id != updatedSession.Id)
+                {
+                    return BadRequest(new
                     {
+                        errors = new[]
+                        {
                         "Id is invalid, must match value in new Session"
                     }
-                });
-            }
-            var result = _sessionService.UpdateSession(id, updatedSession);
+                    });
+                }
+                var result = _sessionService.UpdateSession(id, updatedSession);
 
-            if (result == null)
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
+            }
+            catch (ApplicationException ex)
             {
-                return NotFound();
-            }
+                return StatusCode(500, new { error = ex.Message });
 
-            return Ok(result);
+            }
         }
-        catch(ApplicationException ex)
-            {
-                return StatusCode(500, new {error=ex.Message});
 
-            }
-    }
-    
 
     }
 }

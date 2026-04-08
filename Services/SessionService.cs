@@ -11,7 +11,7 @@ public class SessionService : ISessionService
     {
         _dbContext = dbContext;
 
-}
+    }
 
     private Session? GetRecord(int id)
     {
@@ -23,26 +23,27 @@ public class SessionService : ISessionService
         command.CommandText = """
             SELECT id, type, date, start, end FROM sessions
             WHERE id = $id;
-        """;        
+        """;
         command.Parameters.Add(new SqliteParameter("$id", id));
 
         using var datareader = command.ExecuteReader();
-        
+
         if (!datareader.HasRows) return null;
         else
         {
-            while (datareader.Read()){
+            while (datareader.Read())
+            {
                 {
 
                     var session = new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4));
                     session.Id = datareader.GetInt16(0);
                     return session;
                 }
-                } 
-        }     
+            }
+        }
         return null;
-        
-        
+
+
     }
     public List<Session>? GetAllRecords(PaginationParams paginationParams)
     {
@@ -57,24 +58,25 @@ public class SessionService : ISessionService
             SELECT id, type, date, start, end FROM sessions
             WHERE date(date) >= date($EndDate)
             ORDER BY date(date) DESC, start ASC
-        """;        
+        """;
         command.Parameters.AddWithValue("$EndDate", paginationParams.LastDate);
 
         using var datareader = command.ExecuteReader();
-        var i=0;
-        
+        var i = 0;
+
         if (!datareader.HasRows) return null;
         else
         {
-            while (datareader.Read()){
+            while (datareader.Read())
+            {
                 {
                     rows.Add(new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4)));
                     rows[i].Id = datareader.GetInt16(0);
                     i++;
                 }
-                } 
-        }     
-        
+            }
+        }
+
         return rows;
     }
     public string CreateSession(Session newSession)
@@ -85,7 +87,7 @@ public class SessionService : ISessionService
         connection.Open();
 
         using var command = connection.CreateCommand();
-        command.CommandText =          
+        command.CommandText =
         """
                 INSERT INTO sessions(type, date, start, end) 
                 VALUES 
@@ -113,12 +115,12 @@ public class SessionService : ISessionService
             }
 
         }
-        catch(SqliteException ex)
+        catch (SqliteException ex)
         {
             message = "SQLite Error" + ex.Message;
-            throw new ApplicationException("Database operation failed");      
+            throw new ApplicationException("Database operation failed");
         }
-        
+
         return message;
 
     }
@@ -130,14 +132,14 @@ public class SessionService : ISessionService
         connection.Open();
 
         using var command = connection.CreateCommand();
-        command.CommandText =          
+        command.CommandText =
         """
                 DELETE FROM sessions
                 WHERE id = $ID
                 ;
             """;
         command.Parameters.AddWithValue("$ID", id);
-    
+
         try
         {
             int rowsAffected = command.ExecuteNonQuery();
@@ -151,12 +153,12 @@ public class SessionService : ISessionService
             }
 
         }
-        catch(SqliteException ex)
+        catch (SqliteException ex)
         {
             message = "SQLite Error" + ex.Message;
-            throw new ApplicationException("Database operation failed");      
+            throw new ApplicationException("Database operation failed");
         }
-        
+
         return message;
 
     }
@@ -169,7 +171,7 @@ public class SessionService : ISessionService
         connection.Open();
 
         using var command = connection.CreateCommand();
-        command.CommandText =          
+        command.CommandText =
         """
         UPDATE sessions 
         SET 
@@ -186,7 +188,7 @@ public class SessionService : ISessionService
         command.Parameters.AddWithValue("$Start", newSession.Start);
         command.Parameters.AddWithValue("$End", newSession.End);
 
-    
+
         try
         {
             int rowsAffected = command.ExecuteNonQuery();
@@ -200,12 +202,12 @@ public class SessionService : ISessionService
             }
 
         }
-        catch(SqliteException ex)
+        catch (SqliteException ex)
         {
             message = "SQLite Error" + ex.Message;
-            throw new ApplicationException("Database operation failed");      
+            throw new ApplicationException("Database operation failed");
         }
-        
+
         return message;
 
     }
