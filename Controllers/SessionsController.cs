@@ -12,9 +12,9 @@ namespace SessionAPI.Controllers
     private readonly ISessionService _sessionService = sessionService;
 
     [HttpGet]
-    public ActionResult<List<Session>> GetAllSessions()
+    public ActionResult<List<Session>> GetAllSessions([FromQuery] PaginationParams paginationParams)
     {
-        return Ok(_sessionService.GetAllRecords());
+        return Ok(_sessionService.GetAllRecords(paginationParams));
     }
 
     [HttpPost]

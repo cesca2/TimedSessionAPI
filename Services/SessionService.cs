@@ -44,9 +44,10 @@ public class SessionService : ISessionService
         
         
     }
-    public List<Session>? GetAllRecords()
+    public List<Session>? GetAllRecords(PaginationParams paginationParams)
     {
         var rows = new List<Session>();
+        Console.WriteLine(paginationParams.LastDate);
 
         using var connection = _dbContext.CreateConnection();
         connection.Open();
@@ -54,8 +55,10 @@ public class SessionService : ISessionService
         using var command = connection.CreateCommand();
         command.CommandText = """
             SELECT id, type, date, start, end FROM sessions
-            ORDER BY date ASC, start ASC;
+            WHERE date(date) >= date($EndDate)
+            ORDER BY date(date) DESC, start ASC
         """;        
+        command.Parameters.AddWithValue("$EndDate", paginationParams.LastDate);
 
         using var datareader = command.ExecuteReader();
         var i=0;
