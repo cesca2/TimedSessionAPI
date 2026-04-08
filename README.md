@@ -94,6 +94,7 @@ EXAMPLE INPUT:
 EXAMPLE INPUT:
 ```json
 {
+  "id": 1,
   "type": "C#",
   "date": "2026-03-27",
   "start": "11:00",
@@ -102,6 +103,7 @@ EXAMPLE INPUT:
 ```
 | Field      | Type    | Required | Description                           |
 | ---------- | ------- | -------- | ----------------------------------    |
+| `id`     | `int`  | Yes      | ID of session  |
 | `type`     | `string`  | Yes      | Keyword to describe the session type  |
 | `date`    | `string`  | Yes      | Date of session in format YYYY-MM-DD  |
 | `start` | `string`  | Yes      | Start time of session in format HH:MM |
@@ -116,7 +118,7 @@ EXAMPLE INPUT:
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to update|
+| `id`      | `string` | **Required**. Id of item to delete|
 
 
 ## Helpful Resources
