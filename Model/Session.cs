@@ -1,6 +1,6 @@
 public class Session
 {
-    public int Id { get; set; } = 1; // set to autoincrement in table
+    public Guid Id { get; set; } = Guid.NewGuid(); // set to autoincrement in table
     public string Type { get; set; }
     public string Date { get; set; }
     public string Start { get; set; }

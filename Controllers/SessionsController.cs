@@ -17,12 +17,26 @@ namespace SessionAPI.Controllers
             return Ok(_sessionService.GetAllRecords(paginationParams));
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<Session> GetSessionById(Guid id)
+        {
+        var result = _sessionService.GetRecord(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
         [HttpPost]
         public ActionResult<Session> CreateSession(Session session)
         {
+            var newsession = _sessionService.CreateSession(session);
             try
             {
-                return Ok(_sessionService.CreateSession(session));
+                return CreatedAtAction(nameof(GetSessionById), new { id = session.Id }, newsession);
             }
             catch (ApplicationException ex)
             {
@@ -32,7 +46,7 @@ namespace SessionAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Session> DeleteSession(int id)
+        public ActionResult<Session> DeleteSession(Guid id)
         {
             try
             {
@@ -53,7 +67,7 @@ namespace SessionAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Session> UpdateSession(int id, [FromBody] Session updatedSession)
+        public ActionResult<Session> UpdateSession(Guid id, [FromBody] Session updatedSession)
         {
             try
             {
@@ -75,7 +89,7 @@ namespace SessionAPI.Controllers
                     return NotFound();
                 }
 
-                return Ok(result);
+                return Created("", result);
             }
             catch (ApplicationException ex)
             {

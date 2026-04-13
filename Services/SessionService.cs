@@ -13,7 +13,7 @@ public class SessionService : ISessionService
 
     }
 
-    private Session? GetRecord(int id)
+    public Session? GetRecord(Guid id)
     {
 
         using var connection = _dbContext.CreateConnection();
@@ -36,7 +36,7 @@ public class SessionService : ISessionService
                 {
 
                     var session = new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4));
-                    session.Id = datareader.GetInt16(0);
+                    session.Id = datareader.GetGuid(0);
                     return session;
                 }
             }
@@ -71,7 +71,7 @@ public class SessionService : ISessionService
             {
                 {
                     rows.Add(new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4)));
-                    rows[i].Id = datareader.GetInt16(0);
+                    rows[i].Id = datareader.GetGuid(0);
                     i++;
                 }
             }
@@ -81,6 +81,7 @@ public class SessionService : ISessionService
     }
     public string CreateSession(Session newSession)
     {
+       
         string message;
 
         using var connection = _dbContext.CreateConnection();
@@ -89,14 +90,17 @@ public class SessionService : ISessionService
         using var command = connection.CreateCommand();
         command.CommandText =
         """
-                INSERT INTO sessions(type, date, start, end) 
+                INSERT INTO sessions(id, type, date, start, end) 
                 VALUES 
-                ( $Type, 
+                ( $Id,
+                  $Type, 
                   $Date, 
                   $Start, 
                   $End )
                 ;
             """;
+        
+        command.Parameters.AddWithValue("$Id", newSession.Id.ToString());
         command.Parameters.AddWithValue("$Type", newSession.Type);
         command.Parameters.AddWithValue("$Date", newSession.Date);
         command.Parameters.AddWithValue("$Start", newSession.Start);
@@ -118,13 +122,14 @@ public class SessionService : ISessionService
         catch (SqliteException ex)
         {
             message = "SQLite Error" + ex.Message;
+            Console.WriteLine(message);
             throw new ApplicationException("Database operation failed");
         }
 
         return message;
 
     }
-    public string? DeleteSession(int id)
+    public string? DeleteSession(Guid id)
     {
         string message;
 
@@ -137,8 +142,8 @@ public class SessionService : ISessionService
                 DELETE FROM sessions
                 WHERE id = $ID
                 ;
-            """;
-        command.Parameters.AddWithValue("$ID", id);
+        """;
+        command.Parameters.AddWithValue("$ID", id.ToString());
 
         try
         {
@@ -163,7 +168,7 @@ public class SessionService : ISessionService
 
     }
 
-    public string? UpdateSession(int id, Session newSession)
+    public string? UpdateSession(Guid id, Session newSession)
     {
         string message;
 
@@ -182,7 +187,7 @@ public class SessionService : ISessionService
         WHERE id = $ID
         ;
         """;
-        command.Parameters.AddWithValue("$ID", id);
+        command.Parameters.AddWithValue("$ID", id.ToString());
         command.Parameters.AddWithValue("$Type", newSession.Type);
         command.Parameters.AddWithValue("$Date", newSession.Date);
         command.Parameters.AddWithValue("$Start", newSession.Start);

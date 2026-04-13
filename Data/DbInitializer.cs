@@ -6,7 +6,7 @@ public class DbInitializer
         var command = connection.CreateCommand();
         command.CommandText = @"
               CREATE TABLE IF NOT EXISTS sessions (
-                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                id TEXT NOT NULL PRIMARY KEY ,
                 type TEXT NOT NULL,
                 date TEXT NOT NULL, 
                 start TEXT NOT NULL,
