@@ -42,6 +42,11 @@ Run the application
   dotnet run --project TimedSessionAPI
 ```
 
+Run the dedicated application integration tests
+
+```bash
+  dotnet test TimedSessionAPI.IntegrationTests
+```
 
 ## API Reference
 
@@ -50,6 +55,10 @@ Run the application
 ```http
   GET /api/Sessions
 ```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **optional**. Id of item to fetch , equate to Guid|
+
 | Query Parameters | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `LastDate`      | `string` | **Optional**. Date for session filtering in format YYYY-MM-DD  |
@@ -59,10 +68,6 @@ Run the application
 ```http
   POST /api/Sessions
 ```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
 
 EXAMPLE INPUT:
 ```json
@@ -94,7 +99,7 @@ EXAMPLE INPUT:
 EXAMPLE INPUT:
 ```json
 {
-  "id": 1,
+  "id": "7ab50dd5-c918-45ef-b1f2-99c24d6a7f24",
   "type": "C#",
   "date": "2026-03-27",
   "start": "11:00",
@@ -103,7 +108,7 @@ EXAMPLE INPUT:
 ```
 | Field      | Type    | Required | Description                           |
 | ---------- | ------- | -------- | ----------------------------------    |
-| `id`     | `int`  | Yes      | ID of session  |
+| `id`     | `string`  | Yes      | ID of session  |
 | `type`     | `string`  | Yes      | Keyword to describe the session type  |
 | `date`    | `string`  | Yes      | Date of session in format DD/MM/YYYY  |
 | `start` | `string`  | Yes      | Start time of session in format HH:MM |
@@ -125,3 +130,4 @@ EXAMPLE INPUT:
 
  - Project inspiration from [Habit Logger](https://www.thecsharpacademy.com/project/12/habit-logger) and [Shifts Logger](https://www.thecsharpacademy.com/project/17/shifts-logger) projects
  - [Pagination tutorial](https://www.c-sharpcorner.com/article/implementing-pagination-and-filtering-in-asp-net-core-8-0-api/)
+ - [Integration testing tutorial](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-10.0&pivots=xunit), [Integration testing example 1](https://github.com/martincostello/dotnet-minimal-api-integration-testing/tree/main), [Integration testing example 2](https://medium.com/@ajaykumar1807/integration-testing-for-dotnet-core-apis-handling-database-925507b282b5)
