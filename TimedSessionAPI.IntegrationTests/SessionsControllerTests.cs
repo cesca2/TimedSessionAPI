@@ -1,9 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc.Testing;
-
-using System.Net;
-
 using Newtonsoft.Json;
+using System.Net;
 
 
 namespace SessionAPI.IntegrationTests;
@@ -52,32 +50,32 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Can_Manage_Sessions_SuccessiveCRUD(string sessionsEndpoint)
     {
 
-    // 🔧 Initialize the database at startup
-    using (var scope = _factory.Services.CreateScope())
-    {
+        // 🔧 Initialize the database at startup
+        using (var scope = _factory.Services.CreateScope())
+        {
 
-        var factory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
+            var factory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
 
-        using var connection = factory.CreateConnection();
-        connection.Open();
+            using var connection = factory.CreateConnection();
+            connection.Open();
 
-        DbInitializer.Initialize(connection, reInitialize:true);
-    }
-        
+            DbInitializer.Initialize(connection, reInitialize: true);
+        }
+
         // Act - Get all the items
 
         var response = await _client.GetAsync(sessionsEndpoint);
 
         var itemsInitial = await _client.GetFromJsonAsync<List<Session>>(sessionsEndpoint);
-        
-        // Arrange
-        var initialCount = itemsInitial.Count;
-        
-        // Assert 0 Ensure no items initially
-        Assert.Equal(0, initialCount );
 
         // Arrange
-        
+        var initialCount = itemsInitial.Count;
+
+        // Assert 0 Ensure no items initially
+        Assert.Equal(0, initialCount);
+
+        // Arrange
+
         var newItem = new Session(
         type: "C#",
         date: "27/03/2026",
@@ -90,18 +88,18 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
 
         // Assert - An item was created
         Assert.Equal(HttpStatusCode.Created, createdResponse.StatusCode);
-        
+
         // arrange 
         var jsonString = await createdResponse.Content.ReadAsStringAsync();
         var jsonDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString);
-        
-        string createdId = (string) jsonDict["id"];
-        
+
+        string createdId = (string)jsonDict["id"];
+
         Assert.Equal(newItem.Id.ToString(), createdId);
-        
+
         // Act - Get the item
         var item = await _client.GetFromJsonAsync<Session>($"{sessionsEndpoint}/{createdId}");
-        
+
         // Assert - Verify the item was created correctly
         Assert.NotNull(item);
         Assert.Equal(item.Id.ToString(), createdId);
@@ -111,29 +109,30 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal(item.Type, newItem.Type);
         Assert.Equal(item.Date, newItem.Date);
 
-        
+
         // Act - Get all the items
         var items = await _client.GetFromJsonAsync<List<Session>>(sessionsEndpoint);
 
         // Assert - An item is now present
         Assert.NotNull(items);
         Assert.Equal(initialCount + 1, items.Count);
-        
+
         // Arrange - Create updated Item
         var updatedItem = new Session(
         type: "Python",
         date: "28/03/2026",
         start: "11:30",
-        end: "13:00") {Id = Guid.Parse(createdId)}
+        end: "13:00")
+        { Id = Guid.Parse(createdId) }
         ;
         // Act - Update the item
         using var updatedResponse = await _client.PutAsJsonAsync($"{sessionsEndpoint}/{createdId}", updatedItem);
-        
+
         // Assert - Item has been updated 
         Assert.Equal(HttpStatusCode.Created, updatedResponse.StatusCode);
-    
+
         var updatedCheck = await _client.GetFromJsonAsync<Session>($"{sessionsEndpoint}/{createdId}");
-        
+
         // Assert - Verify the item was updated correctly
         Assert.NotNull(updatedCheck);
         Assert.Equal(updatedCheck.Id, updatedItem.Id);
@@ -152,14 +151,14 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
         items = await _client.GetFromJsonAsync<List<Session>>(sessionsEndpoint);
 
         Assert.Equal(initialCount, items.Count);
-        Assert.DoesNotContain(newItem , items);
+        Assert.DoesNotContain(newItem, items);
 
         // Act -- Check new item no longer exists
         using var getResponse = await _client.GetAsync($"{sessionsEndpoint}/{createdId}");
 
         // Assert
-        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode );
-    
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+
     }
 
 
