@@ -73,7 +73,7 @@ public class SessionService : ISessionService
         using var datareader = command.ExecuteReader();
         var i = 0;
 
-        if (!datareader.HasRows) return null;
+        if (!datareader.HasRows) return rows;
         else
         {
             while (datareader.Read())
@@ -99,7 +99,7 @@ public class SessionService : ISessionService
 
 
     
-    public string CreateSession(Session newSession)
+    public Session CreateSession(Session newSession)
     {
        
         string message;
@@ -146,7 +146,7 @@ public class SessionService : ISessionService
             throw new ApplicationException("Database operation failed");
         }
 
-        return message;
+        return newSession;
 
     }
     public string? DeleteSession(Guid id)

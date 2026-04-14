@@ -2,12 +2,16 @@ using SessionAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 // Register configuration-based services
-builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
+builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>( serviceProvider => new SqliteConnectionFactory(
+            config: serviceProvider.GetRequiredService<IConfiguration>(),
+            dataSource: "Default") );
 builder.Services.AddScoped<ISessionService, SessionService>();
 
 var app = builder.Build();
