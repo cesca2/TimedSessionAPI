@@ -39,7 +39,7 @@ Go to the project directory
 Run the application
 
 ```bash
-  dotnet run
+  dotnet run --project TimedSessionAPI.csproj
 ```
 
 
