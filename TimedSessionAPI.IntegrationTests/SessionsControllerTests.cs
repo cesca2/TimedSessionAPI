@@ -32,6 +32,62 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
 
     }
 
+    [Fact(DisplayName = "Get by invalid Id returns not found")]
+    public async Task Get_Sessions_With_Pagination_Returns_CorrectSessions()
+    {
+
+        // 🔧 Initialize the database at startup
+        using (var scope = _factory.Services.CreateScope())
+        {
+
+            var factory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
+
+            using var connection = factory.CreateConnection();
+            connection.Open();
+
+            DbInitializer.Initialize(connection, reInitialize: true);
+        }
+
+        // Arrange
+        var url = "api/Sessions?LastDate=2026-04-03";
+
+        var exactItem = new Session(
+        type: "C#",
+        date: "03/04/2026",
+        start: "11:00",
+        end: "12:30")
+        ;
+
+        var unexpectedItem= new Session(
+        type: "C#",
+        date: "03/02/2026",
+        start: "11:00",
+        end: "12:30")
+        ;
+
+        var expectedItem= new Session(
+        type: "C#",
+        date: "03/04/2026",
+        start: "11:00",
+        end: "12:30")
+        ;
+
+        await _client.PostAsJsonAsync("api/Sessions", exactItem);
+        await _client.PostAsJsonAsync("api/Sessions", unexpectedItem);
+        await _client.PostAsJsonAsync("api/Sessions", expectedItem);
+
+
+        // Act
+        var items = await _client.GetFromJsonAsync<List<Session>>(url);
+
+        // Assert 
+        Assert.DoesNotContain(items, item => item.Id == unexpectedItem.Id);
+        Assert.Contains(items, item => item.Id == expectedItem.Id);
+        Assert.Contains(items, item => item.Id == exactItem.Id);
+
+
+    }
+
     [Theory(DisplayName = "Get by invalid Id returns not found")]
     [InlineData("api/Sessions/7ab50dd5-c918-45ef-b1f2-99c24d6a7f24")]
     public async Task Get_By_Invalid_Id_Returns_NotFound(string url)
