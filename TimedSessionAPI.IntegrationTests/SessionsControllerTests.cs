@@ -58,14 +58,14 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
         end: "12:30")
         ;
 
-        var unexpectedItem= new Session(
+        var unexpectedItem = new Session(
         type: "C#",
         date: "03/02/2026",
         start: "11:00",
         end: "12:30")
         ;
 
-        var expectedItem= new Session(
+        var expectedItem = new Session(
         type: "C#",
         date: "03/04/2026",
         start: "11:00",
