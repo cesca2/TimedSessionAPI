@@ -14,13 +14,18 @@ namespace SessionAPI.Controllers
         [HttpGet]
         public ActionResult<List<Session>> GetAllSessions([FromQuery] PaginationParams paginationParams)
         {
-            return Ok(_sessionService.GetAllRecords(paginationParams));
-        }
+            try{return Ok(_sessionService.GetAllRecords(paginationParams));}
+            catch(ApplicationException ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }}
+        
 
         [HttpGet("{id}")]
         public ActionResult<Session> GetSessionById(Guid id)
         {
-        var result = _sessionService.GetRecord(id);
+        try{
+            var result = _sessionService.GetRecord(id);
 
         if (result == null)
         {
@@ -28,7 +33,13 @@ namespace SessionAPI.Controllers
         }
 
         return Ok(result);
-    }
+        }
+        catch(ApplicationException ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+        }}
+        
+    
 
         [HttpPost]
         public ActionResult<Session> CreateSession(Session session)

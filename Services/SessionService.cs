@@ -1,12 +1,12 @@
 using Microsoft.Data.Sqlite;
-
+using System.Globalization;
 namespace SessionAPI.Services;
 
 
 public class SessionService : ISessionService
 {
     private readonly IDbConnectionFactory _dbContext;
-    // dependency injection by providing dbcontext in constructor
+
     public SessionService(IDbConnectionFactory dbContext)
     {
         _dbContext = dbContext;
@@ -21,12 +21,13 @@ public class SessionService : ISessionService
 
         using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, type, date, start, end FROM sessions
+            SELECT id, type, date, start, end FROM sessions 
             WHERE id = $id;
         """;
-        command.Parameters.Add(new SqliteParameter("$id", id));
+        command.Parameters.Add(new SqliteParameter("$id", id.ToString()));
 
-        using var datareader = command.ExecuteReader();
+        try{
+            using var datareader = command.ExecuteReader();
 
         if (!datareader.HasRows) return null;
         else
@@ -35,19 +36,26 @@ public class SessionService : ISessionService
             {
                 {
 
-                    var session = new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4));
+                    var session = new Session(datareader.GetString(1), DateTime.ParseExact(datareader.GetString(2), "yyyy-MM-dd", CultureInfo.InvariantCulture).ToShortDateString(), datareader.GetString(3), datareader.GetString(4));
                     session.Id = datareader.GetGuid(0);
                     return session;
                 }
             }
         }
         return null;
+        }
+        catch (SqliteException ex)
+        {
+            var message = "SQLite Error" + ex.Message;
+            Console.WriteLine(message);
+            throw new ApplicationException("Database operation failed");
+        }     
 
 
     }
     public List<Session>? GetAllRecords(PaginationParams paginationParams)
     {
-        var rows = new List<Session>();
+        List<Session> rows = new ();
         Console.WriteLine(paginationParams.LastDate);
 
         using var connection = _dbContext.CreateConnection();
@@ -57,10 +65,11 @@ public class SessionService : ISessionService
         command.CommandText = """
             SELECT id, type, date, start, end FROM sessions
             WHERE date(date) >= date($EndDate)
-            ORDER BY date(date) DESC, start ASC
+            ORDER BY date(date) DESC, start ASC 
         """;
         command.Parameters.AddWithValue("$EndDate", paginationParams.LastDate);
-
+        try
+        {
         using var datareader = command.ExecuteReader();
         var i = 0;
 
@@ -70,15 +79,26 @@ public class SessionService : ISessionService
             while (datareader.Read())
             {
                 {
-                    rows.Add(new Session(datareader.GetString(1), datareader.GetString(2), datareader.GetString(3), datareader.GetString(4)));
+                    rows.Add(new Session(datareader.GetString(1), DateTime.ParseExact(datareader.GetString(2), "yyyy-MM-dd", CultureInfo.InvariantCulture).ToShortDateString(), datareader.GetString(3), datareader.GetString(4)));
                     rows[i].Id = datareader.GetGuid(0);
                     i++;
                 }
             }
         }
 
+        }
+        catch (SqliteException ex)
+        {
+            var message = "SQLite Error" + ex.Message;
+            Console.WriteLine(message);
+            throw new ApplicationException("Database operation failed");
+        }
         return rows;
     }
+        
+
+
+    
     public string CreateSession(Session newSession)
     {
        
@@ -102,7 +122,7 @@ public class SessionService : ISessionService
         
         command.Parameters.AddWithValue("$Id", newSession.Id.ToString());
         command.Parameters.AddWithValue("$Type", newSession.Type);
-        command.Parameters.AddWithValue("$Date", newSession.Date);
+        command.Parameters.AddWithValue("$Date", DateTime.Parse(newSession.Date).ToString("yyyy-MM-dd"));
         command.Parameters.AddWithValue("$Start", newSession.Start);
         command.Parameters.AddWithValue("$End", newSession.End);
 
@@ -189,7 +209,7 @@ public class SessionService : ISessionService
         """;
         command.Parameters.AddWithValue("$ID", id.ToString());
         command.Parameters.AddWithValue("$Type", newSession.Type);
-        command.Parameters.AddWithValue("$Date", newSession.Date);
+        command.Parameters.AddWithValue("$Date", DateTime.Parse(newSession.Date).ToString("yyyy-MM-dd"));
         command.Parameters.AddWithValue("$Start", newSession.Start);
         command.Parameters.AddWithValue("$End", newSession.End);
 
