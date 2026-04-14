@@ -76,7 +76,7 @@ EXAMPLE INPUT:
 | Field      | Type    | Required | Description                           |
 | ---------- | ------- | -------- | ----------------------------------    |
 | `type`     | string  | Yes      | Keyword to describe the session type  |
-| `date`    | string  | Yes      | Date of session in format YYYY-MM-DD  |
+| `date`    | string  | Yes      | Date of session in format DD/MM/YYYY  |
 | `start` | string  | Yes      | Start time of session in format HH:MM |
 | `end`    | string  | Yes      | End time of session in format HH:MM   |
 
@@ -105,7 +105,7 @@ EXAMPLE INPUT:
 | ---------- | ------- | -------- | ----------------------------------    |
 | `id`     | `int`  | Yes      | ID of session  |
 | `type`     | `string`  | Yes      | Keyword to describe the session type  |
-| `date`    | `string`  | Yes      | Date of session in format YYYY-MM-DD  |
+| `date`    | `string`  | Yes      | Date of session in format DD/MM/YYYY  |
 | `start` | `string`  | Yes      | Start time of session in format HH:MM |
 | `end`    | `string`  | Yes      | End time of session in format HH:MM   |
 
