@@ -207,7 +207,7 @@ public class SessionsControllerTests : IClassFixture<WebApplicationFactory<Progr
         items = await _client.GetFromJsonAsync<List<Session>>(sessionsEndpoint);
 
         Assert.Equal(initialCount, items.Count);
-        Assert.DoesNotContain(newItem, items);
+        Assert.DoesNotContain(items, item => item.Id == newItem.Id);
 
         // Act -- Check new item no longer exists
         using var getResponse = await _client.GetAsync($"{sessionsEndpoint}/{createdId}");
